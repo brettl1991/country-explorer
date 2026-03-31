@@ -1,8 +1,8 @@
 <script setup>
 const props = defineProps({
-  search: String,
+  modelValue: String,
 });
-const emit = defineEmits(["update-search"]);
+const emit = defineEmits(["update:modelValue"]);
 </script>
 <template>
   <form @submit.prevent>
@@ -11,8 +11,8 @@ const emit = defineEmits(["update-search"]);
       type="search"
       id="search-input"
       placeholder="Search by country name"
-      :value="search"
-      @input="emit('update-search', $event.target.value)"
+      :value="modelValue"
+      @input="emit('update:modelValue', $event.target.value)"
     />
   </form>
 </template>

@@ -43,17 +43,23 @@ const filteredList = computed(() => {
       <p>{{ subTitle }}</p>
     </header>
     <div class="search-container">
-      <SearchBar
-        class="search"
-        :search="search"
-        @update-search="search = $event"
-      />
-      <p>{{ filteredList.length }}</p>
+      <SearchBar class="search" v-model="search" />
+      <p v-if="!loading && !error">{{ filteredList.length }} countries</p>
     </div>
-    <p></p>
-    <section class="card-grid">
+    <div v-if="loading">
+      <p>Loading countries...</p>
+    </div>
+
+    <div v-else-if="error">
+      <p>Unable to load countries right now.</p>
+    </div>
+
+    <div v-else-if="filteredList.length === 0">
+      <p>No countries match your search.</p>
+    </div>
+
+    <section v-else class="card-grid">
       <CountryCard
-        class="card"
         v-for="country in filteredList"
         :key="country.cca3"
         :country="country"
