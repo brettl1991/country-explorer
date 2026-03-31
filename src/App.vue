@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import CountryCard from "./components/CountryCard.vue";
 import SearchBar from "./components/SearchBar.vue";
 
@@ -7,6 +7,9 @@ const countries = ref([]);
 const search = ref("");
 const loading = ref(false);
 const error = ref(null);
+
+const title = ref("Country Explorer");
+const subTitle = ref("Discover countries, capitals and populations");
 
 const fetchCountries = async () => {
   loading.value = true;
@@ -16,7 +19,7 @@ const fetchCountries = async () => {
       "https://restcountries.com/v3.1/all?fields=name,flags,capital,region,population,area,cca3",
     );
     const data = await resp.json();
-    console.log(data);
+    data.sort((a, b) => a.name.common.localeCompare(b.name.common));
     countries.value = data;
   } catch (err) {
     error.value = err.message;
@@ -24,22 +27,37 @@ const fetchCountries = async () => {
     loading.value = false;
   }
 };
-
 onMounted(fetchCountries);
+
+const filteredList = computed(() => {
+  return countries.value.filter((country) => {
+    const countryName = country.name.common.toLowerCase();
+    return countryName.includes(search.value.toLowerCase());
+  });
+});
 </script>
 <template>
   <main>
     <header>
-      <h1></h1>
-      <p></p>
+      <h1>{{ title }}</h1>
+      <p>{{ subTitle }}</p>
     </header>
     <div class="search-container">
-      <SearchBar class="search" />
-      <p>Resoultcount</p>
+      <SearchBar
+        class="search"
+        :search="search"
+        @update-search="search = $event"
+      />
+      <p>{{ filteredList.length }}</p>
     </div>
     <p></p>
     <section class="card-grid">
-      <CountryCard class="card" />
+      <CountryCard
+        class="card"
+        v-for="country in filteredList"
+        :key="country.cca3"
+        :country="country"
+      />
     </section>
   </main>
 </template>
