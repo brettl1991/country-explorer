@@ -46,15 +46,16 @@ const filteredList = computed(() => {
       <SearchBar class="search" v-model="search" />
       <p v-if="!loading && !error">{{ filteredList.length }} countries</p>
     </div>
-    <div v-if="loading">
+    <div v-if="loading" class="state-message">
       <p>Loading countries...</p>
     </div>
 
-    <div v-else-if="error">
+    <div v-else-if="error" class="state-message">
       <p>Unable to load countries right now.</p>
+      <button type="button" @click="fetchCountries">Reload</button>
     </div>
 
-    <div v-else-if="filteredList.length === 0">
+    <div v-else-if="filteredList.length === 0" class="state-message">
       <p>No countries match your search.</p>
     </div>
 
