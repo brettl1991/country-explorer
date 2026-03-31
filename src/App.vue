@@ -1,47 +1,45 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import { onMounted, ref } from "vue";
+import CountryCard from "./components/CountryCard.vue";
+import SearchBar from "./components/SearchBar.vue";
+
+const countries = ref([]);
+const search = ref("");
+const loading = ref(false);
+const error = ref(null);
+
+const fetchCountries = async () => {
+  loading.value = true;
+  error.value = null;
+  try {
+    const resp = await fetch(
+      "https://restcountries.com/v3.1/all?fields=name,flags,capital,region,population,area,cca3",
+    );
+    const data = await resp.json();
+    console.log(data);
+    countries.value = data;
+  } catch (err) {
+    error.value = err.message;
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(fetchCountries);
 </script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
   <main>
-    <TheWelcome />
+    <header>
+      <h1></h1>
+      <p></p>
+    </header>
+    <div class="search-container">
+      <SearchBar class="search" />
+      <p>Resoultcount</p>
+    </div>
+    <p></p>
+    <section class="card-grid">
+      <CountryCard class="card" />
+    </section>
   </main>
 </template>
-
-<style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
